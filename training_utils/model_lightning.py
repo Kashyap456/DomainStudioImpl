@@ -10,6 +10,15 @@ class DomainStudio(L.LightningModule):
         # Setup pretrained models and utilities
         self.tokenizer, self.encoder, self.vae, self.unet_locked, self.unet_trained = get_pretrained(
             config.model_id)
+
+        # Lock weights of all models except UNetTrained
+        for param in self.encoder.parameters():
+            param.requires_grad = False
+        for param in self.vae.parameters():
+            param.requires_grad = False
+        for param in self.unet_locked.parameters():
+            param.requires_grad = False
+
         self.optimizer, self.scheduler, self.loss, self.lr_scheduler = get_training_utils(
             self.unet_trained, self.vae, config.num_epochs, config.num_train_timesteps, config.lr_base)
 
