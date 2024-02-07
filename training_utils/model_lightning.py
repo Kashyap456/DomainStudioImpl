@@ -25,7 +25,7 @@ class DomainStudio(L.LightningModule):
     def training_step(self, batch, batch_idx):
         images = batch['image']
         images = images.permute(0, 3, 1, 2)
-        x_pr = torch.randn(images.shape)
+        x_pr = torch.randn(images.shape).to(images.device)
 
         # create c_tar using clip
         labels_tr = batch['label_tr']
@@ -42,14 +42,14 @@ class DomainStudio(L.LightningModule):
         c_sou = self.encoder(**tokens_so).last_hidden_state
 
         # Sample noise to add to the images
-        z = self.vae.encode(images).latent_dist.sample().to(images.device)
-        z_pr = self.vae.encode(x_pr).latent_dist.sample().to(images.device)
-        noise = torch.randn(z.shape)
+        z = self.vae.encode(images).latent_dist.sample()
+        z_pr = self.vae.encode(x_pr).latent_dist.sample()
+        noise = torch.randn(z.shape).to(z_pr.device)
         bs = z.shape[0]
 
         # Sample a random timestep for each image
         timesteps = torch.randint(
-            0, self.scheduler.num_train_timesteps, (bs,)).long()
+            0, self.scheduler.num_train_timesteps, (bs,)).long().to(noise.device)
 
         # Add noise to the clean images according to the noise magnitude at each timestep
         # (this is the forward diffusion process)
