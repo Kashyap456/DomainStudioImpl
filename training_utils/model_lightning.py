@@ -25,7 +25,7 @@ class DomainStudio(L.LightningModule):
     def training_step(self, batch, batch_idx):
         images = batch['image']
         images = images.permute(0, 3, 1, 2)
-        x_pr = torch.randn(images.shape).to(images.device)
+        x_pr = torch.randn(images.shape)
 
         # create c_tar using clip
         labels_tr = batch['label_tr']
@@ -42,7 +42,7 @@ class DomainStudio(L.LightningModule):
         # Sample noise to add to the images
         z = self.vae.encode(images).latent_dist.sample()
         z_pr = self.vae.encode(x_pr).latent_dist.sample()
-        noise = torch.randn(z.shape).to(z.device)
+        noise = torch.randn(z.shape)
         bs = z.shape[0]
 
         # Sample a random timestep for each image
@@ -55,10 +55,7 @@ class DomainStudio(L.LightningModule):
 
         # Get the random noise z_pr_t
         z_pr_t = self.scheduler.add_noise(z_pr, noise, timesteps)
-
-        with torch.no_grad():
-            # Predict the noise residual
-            z_pr_sou = self.unet_locked(z_pr_t, timesteps, c_sou)["sample"]
+        z_pr_sou = self.unet_locked(z_pr_t, timesteps, c_sou)["sample"]
 
         # Predict the noise residual
         z_ada = self.unet_trained(z_t, timesteps, c_tar)["sample"]

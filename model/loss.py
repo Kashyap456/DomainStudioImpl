@@ -48,7 +48,7 @@ class PairwiseSimilarityLoss(nn.Module):
 
         # Mask out the self-similarity (diagonal elements of the similarity matrix)
         mask = torch.eye(sim_matrix_ada.size(
-            0)).bool().to(sim_matrix_ada.device)
+            0)).bool()
         sim_matrix_ada = sim_matrix_ada.masked_fill(mask, float('-inf'))
         sim_matrix_sou = sim_matrix_sou.masked_fill(mask, float('-inf'))
 
@@ -130,7 +130,7 @@ class Loss_HF(nn.Module):
 
         # Mask out the self-similarity (diagonal elements of the similarity matrix)
         mask = torch.eye(sim_matrix_ada.size(
-            0)).bool().to(sim_matrix_ada.device)
+            0)).bool()
         sim_matrix_ada = sim_matrix_ada.masked_fill(mask, float('-inf'))
         sim_matrix_sou = sim_matrix_sou.masked_fill(mask, float('-inf'))
 
