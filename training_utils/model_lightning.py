@@ -38,11 +38,12 @@ class DomainStudio(L.LightningModule):
         labels_so = batch['label_so']
         tokens_so = self.tokenizer(
             labels_so, padding=True, return_tensors="pt")
+        tokens_so = {k: v.to(images.device) for k, v in tokens_so.items()}
         c_sou = self.encoder(**tokens_so).last_hidden_state
 
         # Sample noise to add to the images
-        z = self.vae.encode(images).latent_dist.sample()
-        z_pr = self.vae.encode(x_pr).latent_dist.sample()
+        z = self.vae.encode(images).latent_dist.sample().to(images.device)
+        z_pr = self.vae.encode(x_pr).latent_dist.sample().to(images.device)
         noise = torch.randn(z.shape)
         bs = z.shape[0]
 
