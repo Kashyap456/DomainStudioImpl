@@ -31,6 +31,7 @@ class DomainStudio(L.LightningModule):
         labels_tr = batch['label_tr']
         tokens_tr = self.tokenizer(
             labels_tr, padding=True, return_tensors="pt")
+        tokens_tr = {k: v.to(images.device) for k, v in tokens_tr.items()}
         c_tar = self.encoder(**tokens_tr).last_hidden_state
 
         # create c_sou using clip
@@ -47,7 +48,7 @@ class DomainStudio(L.LightningModule):
 
         # Sample a random timestep for each image
         timesteps = torch.randint(
-            0, self.scheduler.num_train_timesteps, (bs,), device=z.device).long()
+            0, self.scheduler.num_train_timesteps, (bs,)).long()
 
         # Add noise to the clean images according to the noise magnitude at each timestep
         # (this is the forward diffusion process)
