@@ -14,5 +14,5 @@ train_dataloader = get_dataloader("domain_set")
 accelerator = "cuda" if torch.cuda.is_available() else "cpu"
 
 trainer = L.Trainer(max_epochs=config.num_epochs,
-                    accumulate_grad_batches=2, accelerator=accelerator)
+                    accelerator=accelerator, precision='16-mixed', accumulate_grad_batches=2)
 trainer.fit(model, train_dataloader)
