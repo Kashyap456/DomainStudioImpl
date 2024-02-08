@@ -177,8 +177,8 @@ class DomainLoss(nn.Module):
 
         # Loss Weights
         self.l1 = 1
-        self.l2 = 2.5e+2
-        self.l3 = 2.5e+2
+        self.l2 = 250
+        self.l3 = 250
         self.l4 = 0.6
 
     def forward(self, z_ada, z, z_pr_sou, z_pr_ada, x_init):
@@ -190,11 +190,11 @@ class DomainLoss(nn.Module):
         loss_hfmse = self.l4 * self.l_hfmse(z_ada, x_init)
 
         # Log or print each component
-        print(f"Loss Simple: {loss_simp.item()}")
-        print(f"Loss PR: {loss_pr.item()}")
-        print(f"Loss IMG: {loss_img.item()}")
-        print(f"Loss HF: {loss_hf.item()}")
-        print(f"Loss HFMSE: {loss_hfmse.item()}")
+        # print(f"Loss Simple: {loss_simp.item()}")
+        # print(f"Loss PR: {loss_pr.item()}")
+        # print(f"Loss IMG: {loss_img.item()}")
+        # print(f"Loss HF: {loss_hf.item()}")
+        # print(f"Loss HFMSE: {loss_hfmse.item()}")
 
         # Return the total loss
         total_loss = loss_simp + loss_pr + loss_img + loss_hf + loss_hfmse

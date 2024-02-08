@@ -2,6 +2,8 @@ from torch.utils.data import Dataset, DataLoader
 import json
 import cv2
 import numpy as np
+from PIL import Image
+from torchvision import transforms
 
 
 class MyDataset(Dataset):
@@ -20,13 +22,30 @@ class MyDataset(Dataset):
         image_name = item['target']
         prompt = item['prompt']
 
-        image = cv2.imread(f"./{self.folder}/" + image_name)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = (image.astype(np.float32) / 127.5) - 1.0
+        image_path = f"./{self.folder}/" + image_name
+        image = Image.open(image_path).convert('RGB')
+
+        resolution = (256, 256)
+        center_crop = True
+        random_flip = True
+
+        #
+        train_transforms = transforms.Compose(
+            [
+                transforms.Resize(
+                    resolution, interpolation=transforms.InterpolationMode.BILINEAR),
+                transforms.CenterCrop(
+                    resolution) if center_crop else transforms.RandomCrop(resolution),
+                transforms.RandomHorizontalFlip() if random_flip else transforms.Lambda(lambda x: x),
+                transforms.ToTensor(),
+                transforms.Normalize([0.5], [0.5]),
+            ]
+        )
+        image = train_transforms(image)
 
         return dict(image=image, label_tr=f"A [V] {prompt}", label_so=f"{prompt}")
 
 
-def get_dataloader(folder_name, batch_size=4):
+def get_dataloader(folder_name, batch_size=2):
     dataset = MyDataset(folder_name)
     return DataLoader(dataset, batch_size=batch_size, shuffle=True)

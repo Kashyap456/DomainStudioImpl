@@ -7,5 +7,5 @@ class Config:
     num_epochs: int = 160
     model_id: str = "runwayml/stable-diffusion-v1-5"
     num_train_timesteps: int = 1000
-    lr_base: float = 4e-6
+    lr_base: float = 4e-5
     lr_scheduler: bool = True

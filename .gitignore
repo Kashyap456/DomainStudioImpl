@@ -3,3 +3,5 @@ domain_set/
 domain_studio/
 __pycache__/
 lightning_logs/
+*.ckpt
+checkpoints/

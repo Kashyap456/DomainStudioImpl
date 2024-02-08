@@ -24,7 +24,7 @@ class DomainStudio(L.LightningModule):
 
     def training_step(self, batch, batch_idx):
         images = batch['image']
-        images = images.permute(0, 3, 1, 2)
+
         x_pr = torch.randn(images.shape).to(images.device)
 
         # create c_tar using clip
