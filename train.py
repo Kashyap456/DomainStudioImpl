@@ -13,6 +13,6 @@ model = DomainStudio(config)
 train_dataloader = get_dataloader("domain_set")
 accelerator = "cuda" if torch.cuda.is_available() else "cpu"
 
-trainer = L.Trainer(max_epochs=config.num_epochs,
-                    accelerator=accelerator, precision='16-mixed', accumulate_grad_batches=2)
+trainer = L.Trainer(max_epochs=-1,
+                    accelerator=accelerator, precision='16-mixed', accumulate_grad_batches=2, callbacks=[checkpoint_callback])
 trainer.fit(model, train_dataloader)

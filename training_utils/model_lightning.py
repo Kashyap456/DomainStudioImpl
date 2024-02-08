@@ -42,8 +42,10 @@ class DomainStudio(L.LightningModule):
         c_sou = self.encoder(**tokens_so).last_hidden_state
 
         # Sample noise to add to the images
-        z = self.vae.encode(images).latent_dist.sample()
-        z_pr = self.vae.encode(x_pr).latent_dist.sample()
+        z = self.vae.encode(images).latent_dist.sample() * \
+            self.vae.config.scaling_factor
+        z_pr = self.vae.encode(x_pr).latent_dist.sample() * \
+            self.vae.config.scaling_factor
         noise = torch.randn(z.shape).to(z_pr.device)
         bs = z.shape[0]
 
@@ -65,7 +67,7 @@ class DomainStudio(L.LightningModule):
         loss = self.loss(z_ada, z, z_pr_sou, z_pr_ada, images)
         self.log("train_loss", loss, on_step=True,
                  on_epoch=True, prog_bar=True, logger=True)
-
+        print("here")
         return loss
 
     def configure_optimizers(self):
