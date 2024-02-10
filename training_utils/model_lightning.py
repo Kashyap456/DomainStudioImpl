@@ -67,7 +67,6 @@ class DomainStudio(L.LightningModule):
         loss = self.loss(z_ada, z, z_pr_sou, z_pr_ada, images)
         self.log("train_loss", loss, on_step=True,
                  on_epoch=True, prog_bar=True, logger=True)
-        print("here")
         return loss
 
     def configure_optimizers(self):

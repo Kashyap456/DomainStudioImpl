@@ -91,15 +91,32 @@ class HaarWaveletTransform(nn.Module):
     def forward(self, x):
         # Ensure input x has a batch and channel dimension
         if x.ndim == 3:
-            x = x.unsqueeze(1)  # Add a batch dimension if it's not present
+            x = x.unsqueeze(1)  # Add a channel dimension if it's not present
 
         # Apply filters to input x independently for each channel
         lh = F.conv2d(x, self.lh_filter, stride=2, padding=0, groups=3)
         hl = F.conv2d(x, self.hl_filter, stride=2, padding=0, groups=3)
         hh = F.conv2d(x, self.hh_filter, stride=2, padding=0, groups=3)
 
-        # Concatenate the results along the channel dimension
-        return torch.cat((lh, hl, hh), dim=1)
+        # Normalize and combine the LH, HL, HH components
+        # Note: Direct normalization to 0-255 might not be ideal for training purposes.
+        # Here we normalize them to have a mean of 0 and a std of 1 for combining
+        def normalize(tensor):
+            mean = tensor.mean([2, 3], keepdim=True)
+            std = tensor.std([2, 3], keepdim=True)
+            return (tensor - mean) / (std + 1e-5)
+
+        lh_norm = normalize(lh)
+        hl_norm = normalize(hl)
+        hh_norm = normalize(hh)
+
+        # Since we're working in a forward function for training, we combine them by averaging
+        # This is different from the visualization approach and ensures the result remains differentiable
+        high_freq_representation = (lh_norm + hl_norm + hh_norm) / 3
+
+        # Note: This operation reduces the channel dimension to the average of the high-frequency components
+        # If you intended to keep the channel dimensionality, consider modifying this approach
+        return high_freq_representation
 
 
 class Loss_HF(nn.Module):
@@ -190,11 +207,11 @@ class DomainLoss(nn.Module):
         loss_hfmse = self.l4 * self.l_hfmse(z_ada, x_init)
 
         # Log or print each component
-        # print(f"Loss Simple: {loss_simp.item()}")
-        # print(f"Loss PR: {loss_pr.item()}")
-        # print(f"Loss IMG: {loss_img.item()}")
-        # print(f"Loss HF: {loss_hf.item()}")
-        # print(f"Loss HFMSE: {loss_hfmse.item()}")
+        print(f"Loss Simple: {loss_simp.item()}")
+        print(f"Loss PR: {loss_pr.item()}")
+        print(f"Loss IMG: {loss_img.item()}")
+        print(f"Loss HF: {loss_hf.item()}")
+        print(f"Loss HFMSE: {loss_hfmse.item()}")
 
         # Return the total loss
         total_loss = loss_simp + loss_pr + loss_img + loss_hf + loss_hfmse

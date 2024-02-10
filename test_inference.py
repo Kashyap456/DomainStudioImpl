@@ -20,14 +20,12 @@ def load_custom_unet_pipeline(checkpoint_path, model_id="runwayml/stable-diffusi
 
 
 # Example usage
-checkpoint_path = "./checkpoints/nagai_mac.ckpt"
+checkpoint_path = "./checkpoints/nagai_4.ckpt"
 pipeline = load_custom_unet_pipeline(checkpoint_path).to("mps")
 # pipeline = StableDiffusionPipeline.from_pretrained(
 #    "runwayml/stable-diffusion-v1-5").to("mps")
-print('here')
 # Now you can use the pipeline for inference with a custom UNet model
-generator = torch.Generator().manual_seed(0)
-image = pipeline(prompt="A painting of a cloudy lit city at night from a plane window", generator=generator,
-                 num_inference_steps=30).images[0]
-print('here2')
+generator = torch.Generator().manual_seed(456)
+image = pipeline(prompt="A city at night", generator=generator,
+                 num_inference_steps=20).images[0]
 image.show()

@@ -1,6 +1,6 @@
 # !/bin/bash
 
-FILE_ID="1cAilBhSDkdU7i2cJRexLKVcrcLtXH4vv"
+FILE_ID="16PxCGtP5qLaneN8zUdYDWn3_Ok7P3qyT"
 ZIP_URL="https://drive.google.com/uc?export=download&id=${FILE_ID}"
 
 curl -L -o domain_set.zip $ZIP_URL

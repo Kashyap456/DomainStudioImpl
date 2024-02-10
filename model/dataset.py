@@ -25,7 +25,7 @@ class MyDataset(Dataset):
         image_path = f"./{self.folder}/" + image_name
         image = Image.open(image_path).convert('RGB')
 
-        resolution = (256, 256)
+        resolution = (512, 512)
         center_crop = True
         random_flip = True
 
@@ -46,6 +46,6 @@ class MyDataset(Dataset):
         return dict(image=image, label_tr=f"A [V] {prompt}", label_so=f"{prompt}")
 
 
-def get_dataloader(folder_name, batch_size=2):
+def get_dataloader(folder_name, batch_size=4):
     dataset = MyDataset(folder_name)
     return DataLoader(dataset, batch_size=batch_size, shuffle=True)
